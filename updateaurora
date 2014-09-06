@@ -1,0 +1,54 @@
+#!/bin/bash
+appdir="/Applications"
+appname="FirefoxAurora.app"
+if [ ! -d $appdir/$appname ]
+  then
+  echo "ERROR: couldn't find $appdir/$appname"
+  exit -1
+fi
+echo -n "Checking current version..."
+cversion=$($appdir/$appname/Contents/MacOS/firefox --version | awk '{ print $3 } ')
+echo "   $cversion"
+dlbase="ftp://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/latest-mozilla-aurora-l10n/"
+echo -n "Querying mozilla about the filename of the newest one..."
+nname=$(curl -s $dlbase | grep ".mac.dmg" | grep "sv-SE" | awk '{ print $9 }')
+echo "   $nname"
+echo -n "Extracting version from filename..."
+nversion=$(echo $nname | php -r "\$a = explode(\"-\",\"firefox-34.0a2.sv-SE.mac.dmg\")[1];\$a = explode(\".\",\$a);unset(\$a[sizeof(\$a)-1]);echo(implode(\".\",\$a));")
+echo "   $nversion"
+echo -n "Comparing versions wheter to update or not..."
+if [ $cversion != $nversion ]
+  then
+  nfile="$dlbase$nname"
+  echo "   Going to update"
+  echo "Downloading $nfile"
+  cd $TMPDIR
+  echo -n "Checking for wget..."
+  which -s wget
+  if [ $? == 1 ]
+    then
+    echo "  Falling back to curl"
+    curl -# "$nfile" > aurora.dmg
+  else
+    echo "  found"
+    wget -c --output-document=aurora.dmg "$nfile"
+  fi
+  echo -n "Download done. Mounting..."
+  /System/Library/CoreServices/DiskImageMounter.app/Contents/MacOS/DiskImageMounter aurora.dmg
+  echo "  [DONE]"
+  cd /Volumes/Aurora
+  echo "Killing currently running instances of aurora..."
+  killall firefox
+  echo "Removing current installation, enter password if prompted...   "
+  sudo rm -rf $appdir/$appname
+  echo "Copying new version..."
+  sudo cp -R $appname $appdir
+  echo -n "Moving temporary file to trash..."
+  mv $TMPDIR/aurora.dmg $HOME/.Trash/$nname
+  echo "   [DONE]"
+  echo "Alright! Update finished!"
+  exit 0
+else
+  echo "   Not updating"
+  exit
+fi
