@@ -14,7 +14,7 @@ echo -n "Querying mozilla about the filename of the newest one..."
 nname=$(curl -s $dlbase | grep ".mac.dmg" | grep "sv-SE" | awk '{ print $9 }')
 echo "   $nname"
 echo -n "Extracting version from filename..."
-nversion=$(echo $nname | php -r "\$a = explode(\"-\",\"firefox-34.0a2.sv-SE.mac.dmg\")[1];\$a = explode(\".\",\$a);unset(\$a[sizeof(\$a)-1]);echo(implode(\".\",\$a));")
+nversion=$(echo $nname | php -r "\$a = explode(\"-\",\"$nname\")[1];\$a = explode(\".\",\$a);unset(\$a[sizeof(\$a)-1]);echo(implode(\".\",\$a));")
 echo "   $nversion"
 echo -n "Comparing versions wheter to update or not..."
 if [ $cversion != $nversion ]
