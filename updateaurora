@@ -1,6 +1,6 @@
 #!/bin/bash
 appdir="/Applications"
-appname="FirefoxAurora.app"
+appname="FirefoxDeveloperEdition.app"
 if [ ! -d $appdir/$appname ]
   then
   echo "ERROR: couldn't find $appdir/$appname"
