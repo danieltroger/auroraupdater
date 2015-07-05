@@ -28,23 +28,23 @@ if [ $cversion != $nversion ]
   if [ $? == 1 ]
     then
     echo "  Falling back to curl"
-    curl -# "$nfile" > aurora.dmg
+    curl -# "$nfile" > firefox.dmg
   else
     echo "  found"
-    wget -c --output-document=aurora.dmg "$nfile"
+    wget -c --output-document=firefox.dmg "$nfile"
   fi
   echo -n "Download done. Mounting..."
-  /System/Library/CoreServices/DiskImageMounter.app/Contents/MacOS/DiskImageMounter aurora.dmg
+  /System/Library/CoreServices/DiskImageMounter.app/Contents/MacOS/DiskImageMounter firefox.dmg
   echo "  [DONE]"
-  cd /Volumes/Aurora
-  echo "Killing currently running instances of aurora..."
+  cd /Volumes/FirefoxDeveloperEdition
+  echo "Killing currently running instances of firefox..."
   killall firefox
   echo "Removing current installation, enter password if prompted...   "
   sudo rm -rf $appdir/$appname
   echo "Copying new version..."
   sudo cp -R $appname $appdir
   echo -n "Moving temporary file to trash..."
-  mv $TMPDIR/aurora.dmg $HOME/.Trash/$nname
+  mv $TMPDIR/firefox.dmg $HOME/.Trash/$nname
   echo "   [DONE]"
   echo "Alright! Update finished!"
   exit 0
